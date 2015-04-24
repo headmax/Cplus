@@ -1,0 +1,138 @@
+
+
+
+
+
+
+[17:25 : 26] Hedmax...: if (!firstCleanScreenshot&& pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ) //When the game record a frame, the flag is CPU_ACESS_READ
+{
+	DxRenderer::GetInstance()->m_pScreen->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pClean);        // set the render target as the back buffer
+	oCreateTexture2D(pDevice, pDesc, NULL, &pClean); //Use original CreateTexture2D and save the frame into pClean
+	printf("ScreenShot clean recorded!\n");
+	firstCleanScreenshot = true;    //don't do it the next screenshot
+	return oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+}
+else
+{
+	if (pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ)
+	{
+		printf("Width: %d  Height: %d \n", pDesc->Width, pDesc->Height);
+
+		HRESULT hRet = oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+
+		DxRenderer::GetInstance()->m_pContext->CopyResource(*ppTexture2D, pClean); //copy pClean into ppTexture2D
+
+		return hRet;
+
+
+
+
+///////////////////////////
+
+		HRESULT __stdcall hkCreateTexture2D(ID3D11Device *pDevice, D3D11_TEXTURE2D_DESC *pDesc, D3D11_SUBRESOURCE_DATA *pInitialData, ID3D11Texture2D **ppTexture2D)
+		{
+			if (pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ)
+			{
+				/*time_t rawtime;
+				struct tm * timeinfo;
+
+				time(&rawtime);
+				timeinfo = localtime(&rawtime);*/
+
+
+				struct tm timeinfo;
+				char am_pm[] = "AM";
+				__time64_t rawtime;
+				/*char timebuf[26];*/
+				errno_t err;
+
+				// Get time as 64-bit integer.
+				_time64(&rawtime);
+				// Convert to local time.
+				err = _localtime64_s(&timeinfo, &rawtime);
+
+
+
+
+				//  printf("I Think PB is taking ScrenShot \n", asctime(timeinfo));
+				printf("Width: %d  Height: %d \n", pDesc->Width, pDesc->Height);
+
+				DxRenderer::GetInstance()->m_pContext->OMGetRenderTargets(1, testa, pDSV);
+				DxRenderer::GetInstance()->m_pContext->ClearRenderTargetView(testa[0], ClearColor);
+
+				HRESULT hRet = oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+				return hRet;
+
+			}
+			if (!firstCleanScreenshot&& pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ) //When the game record a frame, the flag is CPU_ACESS_READ
+			{
+			DxRenderer::GetInstance()->m_pScreen->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pClean);        // set the render target as the back buffer
+			oCreateTexture2D(pDevice, pDesc, NULL, &pClean); //Use original CreateTexture2D and save the frame into pClean
+			printf("ScreenShot clean recorded!\n");
+			firstCleanScreenshot = true;    //don't do it the next screenshot
+			return oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+			}
+			else
+			{
+			if (pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ)
+			{
+			printf("Width: %d  Height: %d \n", pDesc->Width, pDesc->Height);
+
+			HRESULT hRet = oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+
+			DxRenderer::GetInstance()->m_pContext->CopyResource(*ppTexture2D, pClean); //copy pClean into ppTexture2D
+
+			return hRet;
+			}
+			
+
+			return oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+		}
+
+
+
+			[21:14 : 08] Alex: whats so difficult ? ^^
+				[21:14 : 19] Alex : you disable your visual hacks all 30 seconds
+				[21:14 : 24] Alex : for a few frames
+				[21:14 : 39] Alex : then you copy your full BF4 screen
+				[21:14 : 49] Alex : and save it to a D3D11Texture2D
+				[21:15 : 06] jean dupont : hum, ok : )
+				[21:15 : 12] Alex: then you hook CopyResourceAndSomeOtherShitIDontRememberTheFullName
+				[21:15 : 37] Alex : and you compare if the source resource height and width are like a screenshot
+				[21:15 : 43] Alex : so you hook createtexture2d
+				[21:15 : 52] Alex : and you filter with D3D11_ACCESS_FLAGS
+				[21:15 : 56] Alex : on read access
+				[21:16 : 05] Alex : so you know its a screenshot
+				[21:16 : 15] Alex : you do a hook in there, save screenshot width and height
+				[21:16 : 31] Alex : and compare it to the width and height in copyresource
+				[21:16 : 45] Alex : if it is the same, we found our screenshot
+				[21:17 : 02] Alex : now for black screenshot you could insert an empty dxtexture
+				[21:17 : 14] Alex : for clean screenshot you could insert your clean screenshot
+				[21:17 : 26] Alex : for some LOL moment you could insert some porn
+
+
+
+				if (!entierescreentaken && pDesc->CPUAccessFlags == D3D11_CPU_ACCESS_READ)
+				{
+				HRESULT err = DxRenderer::GetInstance()->m_pScreen->m_pSwapChain->GetBuffer(0, __uuidof(pScreenTex), reinterpret_cast<void**>(&pScreenTex));
+				if (!SUCCEEDED(err)) printf("GetBuffer failed with error %08x\n", err);
+				err = oCreateTexture2D(pDevice, pDesc, NULL, &pScreenTex);
+				if (!SUCCEEDED(err)) printf("oCreateTexture2D failed with error %08x\n", err);
+				entierescreentaken = true;
+				FILE_LOG(logINFO) << "hkCreateTexture2D: Taking All Screen info a Texture2d";
+				return oCreateTexture2D(pDevice, pDesc, pInitialData, ppTexture2D);
+				}
+
+
+
+
+
+
+
+
+			AxisAlignedBox &aabb = pPhysEnt->m_collisionShapes->m_aabbs[pPhysEnt->m_currentPose];
+
+			pPhysEnt - soldier + 1b8
+				currentPose + a4
+				collisionShapes + b0
+				aabbs[3]{vec4 min, max} +20
